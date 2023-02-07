@@ -36,6 +36,67 @@ function sql_tuning_mode(){
     cd $TB_SQLPATH
     clear
     echo ""
+    echo "#############################"
+    echo "# apply trace options"
+    echo "#############################"
+    echo " - set autot on exp stat plans    : 1"
+    echo " - set autot on                   : 2"
+    echo " - set autot on exp               : 3"
+    echo " - set autot on stat              : 4"
+    echo " - set autot on plans             : 5"
+    echo " - set autot trace exp stat plans : 6"
+    echo " - set autot trace                : 7"
+    echo " - set autot trace exp            : 8"
+    echo " - set autot trace stat           : 9"
+    echo " - set autot trace plans          : 10"
+    echo ""
+    echo -n "  press key : "
+    read setoption_key
+    echo ""
+    case "$setoption_key" in
+        1)
+            echo "  - apply : set autot on exp stat plans"
+            sed -i '/    ;/c\set autot on exp stat plans    ;' tbsql.login        
+        ;;
+        2)
+            echo "  - apply : set autot on"
+            sed -i '/    ;/c\set autot on    ;' tbsql.login
+        ;;
+        3)
+            echo "  - apply : set autot on exp"
+            sed -i  '/    ;/c\set autot on exp    ;' tbsql.login
+        ;;
+        4)
+            echo "  - apply : set autot on stat"
+        ;;
+        5)
+            echo "  - apply : set autot on plans"
+            sed -i '/    ;/c\set autot on plans    ;' tbsql.login
+        ;;
+        6)
+            echo "  - apply : set autot trace exp stat plans"
+            sed -i '/    ;/c\set autot trace exp stat plans    ;' tbsql.login
+        ;;
+        7)
+            echo "  - apply : set autot trace"
+            sed -i '/    ;/c\set autot trace    ;' tbsql.login
+        ;;
+        8)
+            echo "  - apply : set autot trace exp"
+            sed -i '/    ;/c\set autot trace exp    ;' tbsql.login
+        ;;
+        9)
+            echo "  - apply : set autot trace stat"
+            sed -i '/    ;/c\set autot trace stat    ;' tbsql.login
+        ;;
+        10)
+            echo "  - apply : set autot trace plans"
+            sed -i '/    ;/c\set autot trace plans    ;' tbsql.login
+        ;;
+        *)
+            echo "error"
+        ;;
+    esac
     echo ""
     echo "#############################"
     echo "# apply tuning mode options"
@@ -53,7 +114,7 @@ function sql_tuning_mode(){
     # tbsql.login file appplying and query press
     #--------------------------------------------------------------------------------
     # tbsql.login
-    # query press
+    # query 
 }
 #--------------------------------------------------------------------------------
 
@@ -71,17 +132,15 @@ then
     echo ""
     echo ""
     echo "#############################"
-    echo "# SQL xplan"
+    echo "# Xplan"
     echo "#############################"
-    echo "SQL ID : $SQL_ID"
-    echo "Child number : $CHILD_NUMBER"
-    echo
-
 tbsql -s $TBSQL_USER/$TBSQL_PASSWORD << EOF
     set autot off
     col "SQL Type" format a8
     col "ID" format 99999
     col "PLAN" format a100
+    set head off
+    set feedback off
     set lines 200
     select * from table(dbms_xplan.display_cursor('$SQL_ID',$CHILD_NUMBER, 'ALL'));
     exit
@@ -101,7 +160,7 @@ function sql_tbprof_generator(){
     echo ""
     echo ""
     echo "#############################"
-    echo "# SQL tbprof"
+    echo "# tbprof"
     echo "#############################"
     
     session_sql_id=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |awk '{printf $2}'`
@@ -125,7 +184,6 @@ function sql_tbprof_generator(){
 function sql_tuning_mode_progress(){
     sql_tuning_mode
     sql_xplan_generator
-    read press_key
     #
     #--------------------------------------------------------------------------------
     echo ""
@@ -134,32 +192,37 @@ function sql_tuning_mode_progress(){
     echo "# tuning mode tools"
     echo "#############################"
     echo ""
-    echo " - SQL retry  : run"
-    echo " - SQL tbprof : trc"
+    echo "  - retry  : re"
+    echo "  - tbprof : tr"
     echo "-----------------------------"
     echo "    other key exit."
     echo "-----------------------------"
-    echo
+    echo ""
+    echo -n  "  press key : "
     read select_key
     #--------------------------------------------------------------------------------
 
 
     # select key process
     #--------------------------------------------------------------------------------
-    if [ "$select_key" == "trc" ]
-    then
-        sql_tbprof_generator 
-    elif [ "$select_key" == "run" ]
-    then
-        sql_tuning_mode_progress
-    fi
-    echo ""
-    echo ""
-    echo "#############################"
-    echo "# tuning mode stop"
-    echo "#############################"
-    echo " ....exit"
-    echo ""
+    case "$select_key" in 
+        "re")
+            sql_tuning_mode_progress
+        ;;
+        "tr")
+            sql_tbprof_generator
+        ;;
+    
+        *)
+            echo ""
+            echo ""
+            echo "#############################"
+            echo "# tuning mode stop"
+            echo "#############################"
+            echo " ....exit"
+            echo ""
+        ;;
+    esac
     #--------------------------------------------------------------------------------
 }
 

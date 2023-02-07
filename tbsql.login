@@ -1,7 +1,6 @@
 /* 
  * session parameter
 */ 
-prompt DDL: alter session set sql_trace=yes;
 alter session set sql_trace=yes;
 prompt
 /* 
@@ -23,8 +22,7 @@ set head on
 set feedback on
 set pagesize 1000
 set timing on
---set autot on
-set autot trace exp stat plans
+    ;
 
 
 /* 
