@@ -68,6 +68,7 @@ function sql_tuning_mode(){
         ;;
         4)
             echo "  - apply : set autot on stat"
+            sed -i '/    ;/c\set autot on stat    ;' tbsql.login
         ;;
         5)
             echo "  - apply : set autot on plans"
