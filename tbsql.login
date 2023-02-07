@@ -23,7 +23,9 @@ set head on
 set feedback on
 set pagesize 1000
 set timing on
-set autot on
+--set autot on
+set autot trace exp stat plans
+
 
 /* 
  * display message
