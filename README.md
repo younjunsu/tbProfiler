@@ -1,5 +1,5 @@
 [tibero@4777c5805ab6 tbtuning]$ sh tbtuning.sh 
-
+```
 #############################
  tbsql tuning mode help
 #############################
@@ -8,8 +8,9 @@
   run  : start tbtuning
   help : help message
 -----------------------------
+```
 
-
+```
 [tibero@4777c5805ab6 tbtuning]$ cat tbtuning.sh  |more
 # user configuration
 #--------------------------------------------------------------------------------
@@ -23,3 +24,4 @@ SQL_TRACE_FILE_PATH="" # sql trace file path
 stty erase ^H
 #stty erase ^?
 #--------------------------------------------------------------------------------
+````
