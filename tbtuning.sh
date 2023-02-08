@@ -44,24 +44,26 @@ function fn_display_init(){
 function fn_system_env_check(){
     TB_SQLPATH_COPY="$TB_SQLPATH"
     
-#     if [ -z "$db_charset" ]
-#     then
-# db_charset=`
-# tbsql "$TBSQL_USER/$TBSQL_PASSWORD" -s << EOF
 #     show param NLS_LANG_AT_BOOT
-# EOF
-# `
-#         db_charset=`echo "$db_charset" |grep "NLS_LANG_AT_BOOT" | awk '{print $NF}'`
-#     fi
+    if [ -z "$db_charset" ]
+    then
+        cd $HOME
+db_charset=`
+tbsql "$TBSQL_USER/$TBSQL_PASSWORD" -s <<EOF
+select 'db_charset', CHARACTERSET_NAME, NCHAR_CHARACTERSET_NAME from sys._vt_nls_character_set;
+EOF
+`
+        db_nls_charset=`echo "$db_charset" |grep "db_charset" |awk '{print $2}'`
+        db_national_charset=`echo "$db_charset" |grep "db_charset" |awk '{print $3}'`
+    fi
 
-    tiber_proc_check=`ps -ef|grep tbsvr |grep -w $TB_SID`
+    tiber_proc_check=`ps -ef|grep tbsvr |grep -w $TB_SID` 2>/dev/null
 }
 #--------------------------------------------------------------------------------
 
 # help message function
 #--------------------------------------------------------------------------------
 function fn_help_message(){
-    fn_display_init
     echo ""
     echo "#############################"
     echo " tbsql tuning mode help"
@@ -94,7 +96,7 @@ function fn_error_check(){
     
     if [ -z "$tiber_proc_check" ]
     then
-        echo " ERROR : tbsvr process"
+        echo " ERROR : tbsvr process check"
         error_check="error"
     fi
 
@@ -149,12 +151,13 @@ function fn_tbtuning_options_message(){
     echo "#############################"
     echo "# tuning mode options"
     echo "#############################"
-    echo "  - TIBERO VERSION       : $tibero_version"
-    echo "  - TIBERO USER          : $TBSQL_USER"
-    echo "  - TB_SQLPATH           : $TB_SQLPATH"
-    echo "  - SQL_TRACE_FILE_PATH  : $SQL_TRACE_FILE_PATH"
-    echo "  - TB_NLS_LANG          : $TB_NLS_LANG"
-    #echo "  - DB CHARACTERSET_NAME : $db_charset"
+    echo "  - TIBERO VERSION             : $tibero_version"
+    echo "  - TIBERO USER                : $TBSQL_USER"
+    echo "  - TB_SQLPATH                 : $TB_SQLPATH"
+    echo "  - SQL_TRACE_FILE_PATH        : $SQL_TRACE_FILE_PATH"
+    echo "  - TB_NLS_LANG                : $TB_NLS_LANG"
+    echo "  - DB CHARACTERSET_NAME       : $db_nls_charset"
+    echo "  - DB NCHAR_CHARACTERSET_NAME : $db_national_charset"
     echo ""
 }
 #-------------------------------------------------------------------------------
