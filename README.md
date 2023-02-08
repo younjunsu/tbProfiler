@@ -1,5 +1,6 @@
-[tibero@4777c5805ab6 tbtuning]$ sh tbtuning.sh 
 ```
+[tibero@4777c5805ab6 tbtuning]$ sh tbtuning.sh 
+
 #############################
  tbsql tuning mode help
 #############################
@@ -11,7 +12,7 @@
 ```
 
 ```
-[tibero@4777c5805ab6 tbtuning]$ cat tbtuning.sh  |more
+[tibero@4777c5805ab6 tbtuning]$ more tbtuning.sh
 # user configuration
 #--------------------------------------------------------------------------------
 TBSQL_USER="" # tbsql user
