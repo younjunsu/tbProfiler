@@ -44,7 +44,6 @@ function fn_display_init(){
 function fn_system_env_check(){
     TB_SQLPATH_COPY="$TB_SQLPATH"
     
-#     show param NLS_LANG_AT_BOOT
     if [ -z "$db_charset" ]
     then
         cd $HOME
