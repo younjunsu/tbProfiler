@@ -44,15 +44,17 @@ function fn_display_init(){
 function fn_system_env_check(){
     TB_SQLPATH_COPY="$TB_SQLPATH"
     
-    if [ -z "$db_charset" ]
-    then
-db_charset=`
-tbsql "$TBSQL_USER/$TBSQL_PASSWORD" -s << EOF
-    show param NLS_LANG_AT_BOOT
-EOF
-`
-        db_charset=`echo "$db_charset" |grep "NLS_LANG_AT_BOOT" | awk '{print $NF}'`
-    fi
+#     if [ -z "$db_charset" ]
+#     then
+# db_charset=`
+# tbsql "$TBSQL_USER/$TBSQL_PASSWORD" -s << EOF
+#     show param NLS_LANG_AT_BOOT
+# EOF
+# `
+#         db_charset=`echo "$db_charset" |grep "NLS_LANG_AT_BOOT" | awk '{print $NF}'`
+#     fi
+
+    tiber_proc_check=`ps -ef|grep tbsvr |grep -w $TB_SID`
 }
 #--------------------------------------------------------------------------------
 
@@ -89,6 +91,18 @@ function fn_error_check(){
     
     fn_tibero_version_check
     fn_system_env_check
+    
+    if [ -z "$tiber_proc_check" ]
+    then
+        echo " ERROR : tbsvr process"
+        error_check="error"
+    fi
+
+    if [ -z "$TB_SID" ]
+    then
+        echo " ERROR : TB_SID"
+        error_check="error"
+    fi
 
     if [ -z "$TBSQL_USER" ]
     then
@@ -140,7 +154,7 @@ function fn_tbtuning_options_message(){
     echo "  - TB_SQLPATH           : $TB_SQLPATH"
     echo "  - SQL_TRACE_FILE_PATH  : $SQL_TRACE_FILE_PATH"
     echo "  - TB_NLS_LANG          : $TB_NLS_LANG"
-    echo "  - DB CHARACTERSET_NAME : $db_charset"
+    #echo "  - DB CHARACTERSET_NAME : $db_charset"
     echo ""
 }
 #-------------------------------------------------------------------------------
@@ -376,7 +390,6 @@ function fn_exit(){
         "run")
             fn_error_check
             fn_tuning_mode
-            fn_xplan_gather
         ;;
         *)
             fn_help_message
