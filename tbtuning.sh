@@ -16,7 +16,7 @@ TBSQL_PASSWORD="tmax" # tbslq user password
 TB_SQLPATH="/tibero/work/tbtuning" # working directory
 SQL_TRACE_FILE_PATH="/tibero/tibero6/instance/tbUTF8/log/sqltrace" # sql trace file path
 #--------------------------------------------------------------------------------
-# =MSWIN949  # 5, 6: MSWIN949 / 7: UTF8
+#TB_NLS_LANG=MSWIN949  # 5, 6: MSWIN949 / 7: UTF8
 #LANG=ko_KR.utf8
 stty erase ^H
 #stty erase ^?
@@ -157,6 +157,9 @@ function fn_tbtuning_options_message(){
     echo "  - TB_NLS_LANG                : $TB_NLS_LANG"
     echo "  - DB CHARACTERSET_NAME       : $db_nls_charset"
     echo "  - DB NCHAR_CHARACTERSET_NAME : $db_national_charset"
+    echo "-----------------------------"
+    echo "  sql trace file : "`ls $SQL_TRACE_FILE_PATH |wc -l`
+    echo "-----------------------------"
     echo ""
 }
 #-------------------------------------------------------------------------------
@@ -261,7 +264,14 @@ function fn_tuning_mode(){
     echo "# tuning mode options apply"
     echo "#############################"
     echo ""
-    tbsql $TBSQL_USER/$TBSQL_PASSWORD -s 
+    rlwrap_check=`whereis rlwrap |sed 's/rlwrap://g'`
+    if [ -z "$rlwrap_check" ]
+    then
+        tbsql $TBSQL_USER/$TBSQL_PASSWORD -s 
+    elif [ -n "$rlwrap_check" ]
+    then
+        rlwrap tbsql $TBSQL_USER/$TBSQL_PASSWORD -s 
+    fi       
     # tbsql.login apply  
     # query running
     #---------------------------------------------------------------------------
