@@ -1,42 +1,94 @@
 #!/bin/bash
-
-
-# user configuration.
+# Readme
 #--------------------------------------------------------------------------------
-TBSQL_USER=tibero # tbsql user
-TBSQL_PASSWORD=tmax # tbslq user password
-TB_SQLPATH=/tibero/work/tbtuning # working directory
+#
+#
+#
+#
+#
+#--------------------------------------------------------------------------------
+
+
+# user configuration
+#--------------------------------------------------------------------------------
+TBSQL_USER="tibero" # tbsql user
+TBSQL_PASSWORD="tmax" # tbslq user password
+TB_SQLPATH="/tibero/work/tbtuning" # working directory
 SQL_TRACE_FILE_PATH="/tibero/tibero6/instance/tbUTF8/log/sqltrace" # sql trace file path
 #--------------------------------------------------------------------------------
-#TB_NLS_LANG=MSWIN949  # 5, 6: MSWIN949 / 7: UTF8
+# =MSWIN949  # 5, 6: MSWIN949 / 7: UTF8
 #LANG=ko_KR.utf8
 stty erase ^H
 #stty erase ^?
 #--------------------------------------------------------------------------------
 
-# working directory init. 
+
+# working directory init
 #--------------------------------------------------------------------------------
-mkdir $TB_SQLPATH/log
-rm -f $TB_SQLPATH/log/trc.outfile
-rm -f $TB_SQLPATH/log/sql_capture.txt
-#rm -f $SQL_TRACE_FILE_PATH/*
+mkdir $TB_SQLPATH/log 2>/dev/null
+rm -f $TB_SQLPATH/log/trc.outfile 2>/dev/null
+rm -f $TB_SQLPATH/log/sql_capture.txt 2>/dev/null
 #--------------------------------------------------------------------------------
 
+
+# display init function
+#--------------------------------------------------------------------------------
+function fn_display_init(){
+    clear
+}
+#--------------------------------------------------------------------------------
+
+
+#
+#--------------------------------------------------------------------------------
+function fn_system_env_check(){
+    TB_SQLPATH_COPY="$TB_SQLPATH"
+    
+    if [ -z "$db_charset" ]
+    then
+db_charset=`
+tbsql "$TBSQL_USER/$TBSQL_PASSWORD" -s << EOF
+    show param NLS_LANG_AT_BOOT
+EOF
+`
+        db_charset=`echo "$db_charset" |grep "NLS_LANG_AT_BOOT" | awk '{print $NF}'`
+    fi
+}
+#--------------------------------------------------------------------------------
+
+# help message function
+#--------------------------------------------------------------------------------
 function fn_help_message(){
+    fn_display_init
     echo ""
     echo "#############################"
     echo " tbsql tuning mode help"
     echo "#############################"
     echo " usage: sh tbtuning.sh [option]"
     echo "-----------------------------"
-    echo "  run : start tbtuning"
+    echo "  run  : start tbtuning"
     echo "  help : help message"
     echo "-----------------------------"
     echo ""
 }
+#--------------------------------------------------------------------------------
 
+
+# tibero version check function
+#-------------------------------------------------------------------------------
+function fn_tibero_version_check(){
+    tibero_version=`tbboot -version |grep "Tibero" |sed 's/   / /g'`
+}
+#-------------------------------------------------------------------------------
+
+
+# exception check function 
+#-------------------------------------------------------------------------------
 function fn_error_check(){
     error_check="success"
+    
+    fn_tibero_version_check
+    fn_system_env_check
 
     if [ -z "$TBSQL_USER" ]
     then
@@ -65,18 +117,37 @@ function fn_error_check(){
     if [ "$error_check" == "error" ]
     then
         exit 1
-    elif [ "$erorr_check" == "success" ]
+    elif [ "$error_check" == "success" ]
     then
         continue
     else
         exit 0
     fi
 }
+#-------------------------------------------------------------------------------
 
-function fn_tibero_version_check(){
-    tibero_version=`tbboot -version |grep "Tibero"`
+
+# tbtuning meta display message function
+#-------------------------------------------------------------------------------
+function fn_tbtuning_options_message(){
+    fn_display_init    
+    fn_tibero_version_check
+    echo "#############################"
+    echo "# tuning mode options"
+    echo "#############################"
+    echo "  - TIBERO VERSION       : $tibero_version"
+    echo "  - TIBERO USER          : $TBSQL_USER"
+    echo "  - TB_SQLPATH           : $TB_SQLPATH"
+    echo "  - SQL_TRACE_FILE_PATH  : $SQL_TRACE_FILE_PATH"
+    echo "  - TB_NLS_LANG          : $TB_NLS_LANG"
+    echo "  - DB CHARACTERSET_NAME : $db_charset"
+    echo ""
 }
+#-------------------------------------------------------------------------------
 
+
+# sql autot trace apply function
+#-------------------------------------------------------------------------------
 function fn_set_autot_trace_check(){
     cd $TB_SQLPATH
     echo ""
@@ -93,6 +164,9 @@ function fn_set_autot_trace_check(){
     echo " - set autot trace exp            : 8"
     echo " - set autot trace stat           : 9"
     echo " - set autot trace plans          : 10"
+    echo "-----------------------------"
+    echo " - quit : q"
+    echo "-----------------------------"
     echo ""
     echo -n "  press key : "
     read press_key
@@ -138,30 +212,61 @@ function fn_set_autot_trace_check(){
             echo "  - apply : set autot trace plans"
             sed -i '/    ;/c\set autot trace plans    ;' tbsql.login
         ;;
+        "q")
+            exit 0
+        ;;
         *)
-            echo "error"
+            echo "  - no trace option"
         ;;
     esac
+    echo ""
 }
+#-------------------------------------------------------------------------------
 
+
+# tuning mode function
+#-------------------------------------------------------------------------------
 function fn_tuning_mode(){
+    # tuning mode options display
+    #---------------------------------------------------------------------------        
+    fn_tbtuning_options_message
+    #---------------------------------------------------------------------------        
+        
+    # autot setting
+    #---------------------------------------------------------------------------        
+    fn_set_autot_trace_check
+    #---------------------------------------------------------------------------
+
     # tuning mode query press and tools message display
-    #--------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
     cd $TB_SQLPATH
+
+    echo "#############################"
+    echo "# tuning mode options apply"
+    echo "#############################"
+    echo ""
     tbsql $TBSQL_USER/$TBSQL_PASSWORD -s 
     # tbsql.login apply  
     # query running
-    #--------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
+
+    # xplan running
+    #---------------------------------------------------------------------------
+    fn_xplan_gather
+    #---------------------------------------------------------------------------
 }
+#-------------------------------------------------------------------------------
 
 
+# xplan gather function
+#-------------------------------------------------------------------------------
 function fn_xplan_gather(){
     sql_id=`grep "SQL ID" $TB_SQLPATH/log/sql_capture.txt |tail -n 1 |awk '{print $NF}'`
     child_number=`grep "Child number" $TB_SQLPATH/log/sql_capture.txt |tail -n 1 |awk '{print $NF}'`
 
     if [ -n "$sql_id" ] && [ -n "$child_number" ]
     then    
-        local TB_SQLPATH=""
+        TB_SQLPATH=""
         cd $HOME
         echo ""
         echo ""
@@ -169,33 +274,40 @@ function fn_xplan_gather(){
         echo "# Xplan"
         echo "#############################"
 tbsql -s $TBSQL_USER/$TBSQL_PASSWORD <<EOF
-    set autot off
     col "SQL Type" format a8
     col "ID" format 99999
     col "PLAN" format a100
+    set autot off
     set head off
     set feedback off
     set lines 200
-    select * from table(dbms_xplan.display_cursor('$SQL_ID',$child_number, 'ALL'));
+    select * from table(dbms_xplan.display_cursor('$sql_id',$child_number, 'ALL'));
     exit
 EOF
-    
-    cd $TB_SQLPATH
-    
-    elif [ -z "$SQL_ID" ] || [ -z "$child_number"]
+        TB_SQLPATH=$TB_SQLPATH_COPY
+        cd $TB_SQLPATH
+
+    elif [ -z "$sql_id" ] || [ -z "$child_number"]
     then
         continue
     fi
+
+    # fn_exit
+    #---------------------------------------------------------------------------
+    fn_exit
+    #---------------------------------------------------------------------------
 }
 
+
+# tbprof gather function
+#-------------------------------------------------------------------------------
 function fn_tbporf_gather(){
-    echo ""
     echo ""
     echo "#############################"
     echo "# tbprof"
     echo "#############################"
     
-    session_sql_id=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |awk '{printf $2}'`
+    session_sql_id=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |tail -n 1|awk '{printf $2}'`
     session_serial=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |awk '{printf $3}'`
     session_pid=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |awk '{printf $4}'`
 	current_trace_file=`ls $SQL_TRACE_FILE_PATH/tb_sqltrc_"$session_pid"_"$session_sql_id"_"$session_serial".trc`
@@ -207,63 +319,64 @@ function fn_tbporf_gather(){
     then
         continue
     fi
+
+    # fn_exit
+    #---------------------------------------------------------------------------
+    fn_exit
+    #---------------------------------------------------------------------------
 }
 
+
+# exit message function
+#-------------------------------------------------------------------------------
 function fn_exit(){
-    #
-    #--------------------------------------------------------------------------------
-    echo ""
     echo ""
     echo "#############################"
     echo "# tuning mode tools"
     echo "#############################"
     echo ""
-    echo "  - retry  : re"
-    echo "  - tbprof : tr"
+    echo "  - tuning  : re"
+    echo "  - tbprof  : tr"
+    echo "  - quit    : q"
     echo "-----------------------------"
-    echo "    other key exit."
+    echo "    other key retry."
     echo "-----------------------------"
     echo ""
     echo -n  "  press key : "
     read press_key
-    #--------------------------------------------------------------------------------
 
-    #
-    #--------------------------------------------------------------------------------
     case "$press_key" in 
         "re")
-            sql_tuning_mode_progress
+            fn_tuning_mode
         ;;
         "tr")
-            sql_tbprof_generator
+            fn_tbporf_gather
         ;;
-    
-        *)
-            echo ""
+        "q")
             echo ""
             echo "#############################"
             echo "# tuning mode stop"
             echo "#############################"
             echo " ....exit"
             echo ""
+            exit 1
+        ;;
+        *)
+            fn_exit
         ;;
     esac
-    #--------------------------------------------------------------------------------
 }
+#-------------------------------------------------------------------------------
 
 
-# Functions
+# functions process
 #--------------------------------------------------------------------------------
     vaild_option=$1
     case "$vaild_option" in
         "run")
             fn_error_check
-            fn_tibero_version_check
-            fn_set_autot_trace_check
             fn_tuning_mode
             fn_xplan_gather
-            fn_tbporf_gather
-            fn_exit
         ;;
         *)
             fn_help_message

@@ -1,36 +1,26 @@
-/* 
- * session parameter
-*/ 
-alter session set sql_trace=yes;
-prompt
-/* 
- * spool 
-*/ 
+-- spool apply
 spool log/sql_capture.txt
 prompt
-/*
- *  sql trace file check
-*/
+
+-- session infomation
 set feedback off
 select 'tbprofinfo' tbprof, sid, serial#, pid from v$session where sid = (select SESS_ID from vt_mysessid);
 prompt
 
-/* 
- * tbsql system env
-*/ 
+-- session parameter
+alter session set sql_trace=yes;
+prompt
+
+-- tbsql system env apply
 set head on
 set feedback on
 set pagesize 1000
 set timing on
     ;
 
-
-/* 
- * display message
-*/ 
-prompt
+-- tbsql display message
 prompt
 prompt #############################
-prompt # Query press
+prompt # query
 prompt #############################
 prompt
