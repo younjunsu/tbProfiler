@@ -1,87 +1,47 @@
 #!/bin/bash
-
+Tibero 6   (DB 6.0 FS07_CS_2005)
+Tibero 7   (DB 7.0 FS02) Build 254994
+Tibero 5   (DB 5.0 S1419)
+Tibero 5 SP1 (DB 5.0 FS02)
 
 # user configuration.
 #--------------------------------------------------------------------------------
 TBSQL_USER=tibero # tbsql user
 TBSQL_PASSWORD=tmax # tbslq user password
-TB_SQLPATH=/tibero/work/tbtuning # working directory
 SQL_TRACE_FILE_PATH="/tibero/tibero6/instance/tbUTF8/log/sqltrace" # sql trace file path
+TB_SQLPATH=/tibero/work/tuning # working directory
+TB_NLS_LANG=MSWIN949  # 5, 6: MSWIN949 / 7: UTF8
 #--------------------------------------------------------------------------------
-#TB_NLS_LANG=MSWIN949  # 5, 6: MSWIN949 / 7: UTF8
-#LANG=ko_KR.utf8
+LANG=ko_KR.utf8
 stty erase ^H
 #stty erase ^?
 #--------------------------------------------------------------------------------
 
+
 # working directory init. 
 #--------------------------------------------------------------------------------
-mkdir $TB_SQLPATH/log
 rm -f $TB_SQLPATH/log/trc.outfile
 rm -f $TB_SQLPATH/log/sql_capture.txt
 #rm -f $SQL_TRACE_FILE_PATH/*
 #--------------------------------------------------------------------------------
 
-function fn_help_message(){
-    echo ""
-    echo "#############################"
-    echo " tbsql tuning mode help"
-    echo "#############################"
-    echo " usage: sh tbtuning.sh [option]"
-    echo "-----------------------------"
-    echo "  run : start tbtuning"
-    echo "  help : help message"
-    echo "-----------------------------"
-    echo ""
-}
 
-function fn_error_check(){
-    error_check="success"
+# log directory 
+#--------------------------------------------------------------------------------
+mkdir $TB_SQLPATH/log
+#--------------------------------------------------------------------------------
 
-    if [ -z "$TBSQL_USER" ]
-    then
-        echo "ERROR : TBSQL_USER"
-        error_check="error"
-    fi
 
-    if [ -z "$TBSQL_PASSWORD" ]
-    then
-        echo "ERROR : TBSQL_PASSWORD"
-        error_check="error"
-    fi
-
-    if [ -z "$TB_SQLPATH" ]
-    then
-        echo "ERROR : TB_SQLPATH"
-        error_check="error"
-    fi
-
-    if [ -z "$SQL_TRACE_FILE_PATH" ]
-    then
-        echo "ERROR : SQL_TRACE_FILE_PATH"
-        error_check="error"
-    fi
-
-    if [ "$error_check" == "error" ]
-    then
-        exit 1
-    elif [ "$erorr_check" == "success" ]
-    then
-        continue
-    else
-        exit 0
-    fi
-}
-
-function fn_tibero_version_check(){
-    tibero_version=`tbboot -version |grep "Tibero"`
-}
-
-function fn_set_autot_trace_check(){
+# sql_tuning_mode start
+#--------------------------------------------------------------------------------
+function sql_tuning_mode(){
+    # tuning mode start message display
+    #--------------------------------------------------------------------------------
     cd $TB_SQLPATH
+    clear
     echo ""
     echo "#############################"
-    echo "# trace options"
+    echo "# apply trace options"
     echo "#############################"
     echo " - set autot on exp stat plans    : 1"
     echo " - set autot on                   : 2"
@@ -95,9 +55,9 @@ function fn_set_autot_trace_check(){
     echo " - set autot trace plans          : 10"
     echo ""
     echo -n "  press key : "
-    read press_key
+    read setoption_key
     echo ""
-    case "$press_key" in
+    case "$setoption_key" in
         1)
             echo "  - apply : set autot on exp stat plans"
             sed -i '/    ;/c\set autot on exp stat plans    ;' tbsql.login        
@@ -142,33 +102,44 @@ function fn_set_autot_trace_check(){
             echo "error"
         ;;
     esac
-}
+    echo ""
+    echo "#############################"
+    echo "# apply tuning mode options"
+    echo "#############################"
+    #--------------------------------------------------------------------------------
 
-function fn_tuning_mode(){
+
     # tuning mode query press and tools message display
     #--------------------------------------------------------------------------------
-    cd $TB_SQLPATH
     tbsql $TBSQL_USER/$TBSQL_PASSWORD -s 
-    # tbsql.login apply  
-    # query running
+
+
+    # tuning mode start
     #--------------------------------------------------------------------------------
+    # tbsql.login file appplying and query press
+    #--------------------------------------------------------------------------------
+    # tbsql.login
+    # query 
 }
+#--------------------------------------------------------------------------------
 
 
-function fn_xplan_gather(){
-    sql_id=`grep "SQL ID" $TB_SQLPATH/log/sql_capture.txt |tail -n 1 |awk '{print $NF}'`
-    child_number=`grep "Child number" $TB_SQLPATH/log/sql_capture.txt |tail -n 1 |awk '{print $NF}'`
+# sql xplan generator function
+#--------------------------------------------------------------------------------
+function sql_xplan_generator(){    
+SQL_ID=`grep "SQL ID" $TB_SQLPATH/log/sql_capture.txt |tail -n 1 |awk '{print $NF}'`
+CHILD_NUMBER=`grep "Child number" $TB_SQLPATH/log/sql_capture.txt |tail -n 1 |awk '{print $NF}'`
 
-    if [ -n "$sql_id" ] && [ -n "$child_number" ]
-    then    
-        local TB_SQLPATH=""
-        cd $HOME
-        echo ""
-        echo ""
-        echo "#############################"
-        echo "# Xplan"
-        echo "#############################"
-tbsql -s $TBSQL_USER/$TBSQL_PASSWORD <<EOF
+if [ -n "$SQL_ID" ] && [ -n "$CHILD_NUMBER" ]
+then    
+    local TB_SQLPATH=""
+    cd $HOME
+    echo ""
+    echo ""
+    echo "#############################"
+    echo "# Xplan"
+    echo "#############################"
+tbsql -s $TBSQL_USER/$TBSQL_PASSWORD << EOF
     set autot off
     col "SQL Type" format a8
     col "ID" format 99999
@@ -176,19 +147,21 @@ tbsql -s $TBSQL_USER/$TBSQL_PASSWORD <<EOF
     set head off
     set feedback off
     set lines 200
-    select * from table(dbms_xplan.display_cursor('$SQL_ID',$child_number, 'ALL'));
+    select * from table(dbms_xplan.display_cursor('$SQL_ID',$CHILD_NUMBER, 'ALL'));
     exit
 EOF
-    
     cd $TB_SQLPATH
-    
-    elif [ -z "$SQL_ID" ] || [ -z "$child_number"]
-    then
-        continue
-    fi
+elif [ -z "$SQL_ID" ] || [ -z "$CHILD_NUMBER"]
+then
+    continue
+fi
 }
+#--------------------------------------------------------------------------------
 
-function fn_tbporf_gather(){
+
+# tbprof generator function
+#--------------------------------------------------------------------------------
+function sql_tbprof_generator(){
     echo ""
     echo ""
     echo "#############################"
@@ -207,9 +180,15 @@ function fn_tbporf_gather(){
     then
         continue
     fi
+	
 }
+#--------------------------------------------------------------------------------
 
-function fn_exit(){
+# SQL xplan
+#--------------------------------------------------------------------------------
+function sql_tuning_mode_progress(){
+    sql_tuning_mode
+    sql_xplan_generator
     #
     #--------------------------------------------------------------------------------
     echo ""
@@ -225,12 +204,13 @@ function fn_exit(){
     echo "-----------------------------"
     echo ""
     echo -n  "  press key : "
-    read press_key
+    read select_key
     #--------------------------------------------------------------------------------
 
-    #
+
+    # select key process
     #--------------------------------------------------------------------------------
-    case "$press_key" in 
+    case "$select_key" in 
         "re")
             sql_tuning_mode_progress
         ;;
@@ -251,22 +231,7 @@ function fn_exit(){
     #--------------------------------------------------------------------------------
 }
 
-
 # Functions
 #--------------------------------------------------------------------------------
-    vaild_option=$1
-    case "$vaild_option" in
-        "run")
-            fn_error_check
-            fn_tibero_version_check
-            fn_set_autot_trace_check
-            fn_tuning_mode
-            fn_xplan_gather
-            fn_tbporf_gather
-            fn_exit
-        ;;
-        *)
-            fn_help_message
-        ;;
-    esac
+sql_tuning_mode_progress
 #--------------------------------------------------------------------------------
