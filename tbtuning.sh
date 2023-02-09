@@ -232,10 +232,11 @@ function fn_set_autot_trace_check(){
             sed -i '/    ;/c\set autot trace plans    ;' tbsql.login
         ;;
         "q")
-            exit 0
+            exit 1
         ;;
         *)
             echo "  - no trace option"
+            sed -i '/    ;/c\    ;' tbsql.login
         ;;
     esac
     echo ""
@@ -332,15 +333,15 @@ function fn_tbporf_gather(){
     echo "#############################"
     echo "# tbprof"
     echo "#############################"
-    
+    trc_file_seqeunce=`echo "$RANDOM"_tmp`
     session_sql_id=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |tail -n 1|awk '{printf $2}'`
     session_serial=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |awk '{printf $3}'`
     session_pid=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |awk '{printf $4}'`
 	current_trace_file=`ls $SQL_TRACE_FILE_PATH/tb_sqltrc_"$session_pid"_"$session_sql_id"_"$session_serial".trc`
     if [ -n "$current_trace_file" ]
     then
-	    tbprof $current_trace_file $TB_SQLPATH/log/trc.outfile sys=no
-        vi $TB_SQLPATH/log/trc.outfile
+	    tbprof $current_trace_file $TB_SQLPATH/log/"$trc_file_seqeunce"_trc.outfile sys=no
+        vi  $TB_SQLPATH/log/"$file_seqeunce"_trc.outfile
     elif [ -z "$current_trace_file" ]
     then
         continue
