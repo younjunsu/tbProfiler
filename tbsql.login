@@ -15,6 +15,7 @@ prompt
 set head on
 set feedback on
 set pagesize 1000
+set linesize 100
 set timing on
     ;
 
