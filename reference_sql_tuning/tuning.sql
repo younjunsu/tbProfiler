@@ -39,25 +39,6 @@ Execution Stat
    1  GROUP BY (HASH) (Time:2381.83 ms, Rows:987189, Starts:1) 
    2    TABLE ACCESS (FULL): USER_POST_INFO (Time:259.01 ms, Rows:3000000, Starts:1) 
 
-
-create index idx_post_user_id on user_post_info (user_id); 
-
-Execution Stat
-----------------------------------------------------------------------------------------------------
-   1  COLUMN PROJECTION (Time:65.6 ms, Rows:987189, Starts:1) 
-   2    SORT AGGR (Time:718.25 ms, Rows:987189, Starts:1) 
-   3      FILTER (Time:208.51 ms, Rows:3000000, Starts:1) 
-   4        INDEX (FULL): IDX_POST_USER_ID (Time:49.96 ms, Rows:3000000, Starts:1) 
-/*+ index(user_post_info IDX_POST_USER_ID) */
-select 
-    user_id, count(*) post_cnt
-from
-    user_post_info 
-group by
-    user_id;
-
-
-
 -- 사용자별 게시글 개수 중 탑 사용자 10명
 select 
     post_cnt_top_user.user_id,
@@ -82,16 +63,6 @@ Execution Stat
    1  ORDER BY (SORT) TOP-N (Time:136.58 ms, Rows:10, Starts:1) 
    2    GROUP BY (HASH) (Time:2362.21 ms, Rows:987189, Starts:1) 
    3      TABLE ACCESS (FULL): USER_POST_INFO (Time:262.75 ms, Rows:3000000, Starts:1) 
-
-
-
-Execution Stat
-----------------------------------------------------------------------------------------------------
-   1  ORDER BY (SORT) TOP-N (Time:147.51 ms, Rows:10, Starts:1) 
-   2    SORT AGGR (Time:714.34 ms, Rows:987189, Starts:1) 
-   3      FILTER (Time:205.72 ms, Rows:3000000, Starts:1) 
-   4        INDEX (FULL): IDX_POST_USER_ID (Time:20.48 ms, Rows:3000000, Starts:1) 
-
 
 
 -- 사용자별 댓글 개수 중 탑 사용자 10명
@@ -120,17 +91,6 @@ Execution Stat
    3      TABLE ACCESS (FULL): USER_COMMENT_INFO (Time:2435.43 ms, Rows:5000000, Starts:1) 
 
 
-
-Execution Stat
-----------------------------------------------------------------------------------------------------
-   1  ORDER BY (SORT) TOP-N (Time:153.85 ms, Rows:10, Starts:1) 
-   2    SORT AGGR (Time:857.03 ms, Rows:1037907, Starts:1) 
-   3      FILTER (Time:341.78 ms, Rows:5000000, Starts:1) 
-   4        INDEX (FULL): IDX_COMMENT_USER_ID (Time:33.93 ms, Rows:5000000, Starts:1) 
-
-
-create index idx_comment_user_id on user_comment_info(user_id);
-
 -- 댓글이 가장 많이 달린 탑 게시글 10개
 select
     comment_top_post.post_id,
@@ -157,34 +117,6 @@ Execution Stat
    1  ORDER BY (SORT) TOP-N (Time:337.72 ms, Rows:10, Starts:1) 
    2    GROUP BY (HASH) (Time:7069.42 ms, Rows:2432897, Starts:1) 
    3      TABLE ACCESS (FULL): USER_COMMENT_INFO (Time:2660.03 ms, Rows:5000000, Starts:1) 
-
-create index idx_comment_post_id on user_comment_info(post_id);
-
-select 
-    comment_top_post.post_id,
-    comment_top_post.comment_cnt
-from
-    (
-        select /* NO_INDEX_FFS(user_comment_info IDX_COMMENT_POST_ID) */
-            post_id,
-            count(*) comment_cnt
-        from
-            user_comment_info
-        where
-            post_id is not null
-        group by
-            post_id
-        order by 
-            comment_cnt desc
-    ) comment_top_post
-where
-    rownum <= 10;
-Execution Stat
-----------------------------------------------------------------------------------------------------
-   1  ORDER BY (SORT) TOP-N (Time:331.98 ms, Rows:10, Starts:1) 
-   2    GROUP BY (HASH) (Time:3838.87 ms, Rows:2432897, Starts:1) 
-   3      FILTER (Time:346.42 ms, Rows:5000000, Starts:1) 
-   4        INDEX (FAST FULL SCAN): IDX_COMMENT_POST_ID (Time:60.98 ms, Rows:5000000, Starts:1) 
 
 -- 게시글 조회 수가 높은 탑 10개 게시글
 select
