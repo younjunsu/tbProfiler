@@ -158,7 +158,10 @@ function fn_tbtuning_options_message(){
     echo "  - DB CHARACTERSET_NAME       : $db_nls_charset"
     echo "  - DB NCHAR_CHARACTERSET_NAME : $db_national_charset"
     echo "-----------------------------"
-    echo "  sql trace file : "`ls $SQL_TRACE_FILE_PATH |wc -l`
+    echo "  sql tbprof file count : "`ls $TB_SQLPATH/log |grep trc |wc -l`
+    echo "    - $TB_SQLPATH"    
+    echo "  sql trace file count  : "`ls $SQL_TRACE_FILE_PATH |wc -l`
+    echo "    - $SQL_TRACE_FILE_PATH"
     echo "-----------------------------"
     echo ""
 }
@@ -341,7 +344,7 @@ function fn_tbporf_gather(){
     if [ -n "$current_trace_file" ]
     then
 	    tbprof $current_trace_file $TB_SQLPATH/log/"$trc_file_seqeunce"_trc.outfile sys=no
-        vi  $TB_SQLPATH/log/"$file_seqeunce"_trc.outfile
+        vi  $TB_SQLPATH/log/"$trc_file_seqeunce"_trc.outfile
     elif [ -z "$current_trace_file" ]
     then
         continue
