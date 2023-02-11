@@ -52,11 +52,11 @@ tbsql "$TBSQL_USER/$TBSQL_PASSWORD" -s <<EOF
 select 'db_charset', CHARACTERSET_NAME, NCHAR_CHARACTERSET_NAME from sys._vt_nls_character_set;
 EOF
 `
-        db_nls_charset=`echo "$db_charset" |grep "db_charset" |awk '{print $2}'`
-        db_national_charset=`echo "$db_charset" |grep "db_charset" |awk '{print $3}'`
+        db_nls_charset=`echo "$db_charset" |grep "db_charset" |awk '{print $2}' 2>/dev/null`
+        db_national_charset=`echo "$db_charset" |grep "db_charset" |awk '{print $3}' 2>/dev/null` 
     fi
 
-    tiber_proc_check=`ps -ef|grep tbsvr |grep -w $TB_SID` 2>/dev/null
+    tibero_proc_check=`ps -ef|grep tbsvr |grep -w $TB_SID 2>/dev/null`
 }
 #--------------------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ function fn_error_check(){
     fn_tibero_version_check
     fn_system_env_check
     
-    if [ -z "$tiber_proc_check" ]
+    if [ -z "$tibero_proc_check" ]
     then
         echo " ERROR : tbsvr process check"
         error_check="error"
@@ -336,6 +336,28 @@ function fn_tbporf_gather(){
     echo "#############################"
     echo "# tbprof"
     echo "#############################"
+    echo ""
+    echo -ne "-(10%)\r"
+    sleep 0.1
+    echo -ne "\(20%)\r"
+    sleep 0.1
+    echo -ne "-(30%)\r"
+    sleep 0.1
+    echo -ne "/(40%)\r"
+    sleep 0.1
+    echo -ne "-(50%)\r"
+    sleep 0.1
+    echo -ne "\(60%)\r"
+    sleep 0.1
+    echo -ne "-(70%)\r"
+    sleep 0.1        
+    echo -ne "/(80%)\r"
+    sleep 0.1
+    echo -ne "-(90%)\r"
+    sleep 0.1        
+    echo -ne "\(100%)\r"
+    sleep 0.1
+
     trc_file_seqeunce=`echo "$RANDOM"_tmp`
     session_sql_id=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |tail -n 1|awk '{printf $2}'`
     session_serial=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |awk '{printf $3}'`
