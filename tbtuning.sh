@@ -174,7 +174,7 @@ function fn_set_autot_trace_check(){
     cd $TB_SQLPATH
     echo ""
     echo "#############################"
-    echo "# trace options"
+    echo "# trace option"
     echo "#############################"
     echo " - set autot on exp stat plans    : 1"
     echo " - set autot on                   : 2"
@@ -265,7 +265,7 @@ function fn_tuning_mode(){
     cd $TB_SQLPATH
 
     echo "#############################"
-    echo "# tuning mode options apply"
+    echo "# tbsql.loing options apply"
     echo "#############################"
     echo ""
     rlwrap_check=`whereis rlwrap |sed 's/rlwrap://g'`
@@ -301,7 +301,7 @@ function fn_xplan_gather(){
         echo ""
         echo ""
         echo "#############################"
-        echo "# Xplan"
+        echo "# TIBERO XPLAN"
         echo "#############################"
 tbsql -s $TBSQL_USER/$TBSQL_PASSWORD <<EOF
     col "SQL Type" format a8
@@ -334,7 +334,7 @@ EOF
 function fn_tbporf_gather(){
     echo ""
     echo "#############################"
-    echo "# tbprof"
+    echo "# tbprof extract"
     echo "#############################"
     echo ""
     echo -ne "-(10%)\r"
@@ -384,7 +384,7 @@ function fn_tbporf_gather(){
 function fn_exit(){
     echo ""
     echo "#############################"
-    echo "# tuning mode tools"
+    echo "# tuning mode menu"
     echo "#############################"
     echo ""
     echo "  - tuning  : re"
