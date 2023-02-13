@@ -85,3 +85,7 @@ FROM
 		FROM dual CONNECT BY LEVEL <=5000000
 	) b
 ;	
+
+
+
+exec dbms_stats.gather_table_stats(ownname=>'TIBERO', TABNAME=>'USER_COMMENT_INFO');
