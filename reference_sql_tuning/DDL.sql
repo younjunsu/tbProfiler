@@ -88,4 +88,5 @@ FROM
 
 
 
+exec dbms_stats.gather_table_stats(ownname=>'TIBERO', TABNAME=>'USER_POST_INFO');
 exec dbms_stats.gather_table_stats(ownname=>'TIBERO', TABNAME=>'USER_COMMENT_INFO');
