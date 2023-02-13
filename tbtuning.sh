@@ -282,7 +282,7 @@ function fn_tuning_mode(){
 
     # xplan running
     #---------------------------------------------------------------------------
-    fn_xplan_gather
+    fn_xplan_execute
     #---------------------------------------------------------------------------
 }
 #-------------------------------------------------------------------------------
@@ -290,7 +290,7 @@ function fn_tuning_mode(){
 
 # xplan gather function
 #-------------------------------------------------------------------------------
-function fn_xplan_gather(){
+function fn_xplan_execute(){
     sql_id=`grep "SQL ID" $TB_SQLPATH/log/sql_capture.txt |tail -n 1 |awk '{print $NF}'`
     child_number=`grep "Child number" $TB_SQLPATH/log/sql_capture.txt |tail -n 1 |awk '{print $NF}'`
 
@@ -331,7 +331,7 @@ EOF
 
 # tbprof gather function
 #-------------------------------------------------------------------------------
-function fn_tbporf_gather(){
+function fn_tbporf_execute(){
     echo ""
     echo "#############################"
     echo "# tbprof extract"
@@ -402,7 +402,7 @@ function fn_exit(){
             fn_tuning_mode
         ;;
         "tr")
-            fn_tbporf_gather
+            fn_tbporf_execute
         ;;
         "q")
             echo ""
