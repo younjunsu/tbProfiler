@@ -12,3 +12,17 @@
 /*
     카카오톡, 페이스북 사용자의 
 */
+
+
+
+select user_id, post_id, post_path, post_view from user_post_info where
+post_createdate between '20221201' and '20221231';
+
+
+select /*+ index(user_post_info idx_user_post_info_post_createdate) */ user_id, post_id, post_path, post_view from user_post_info where
+post_createdate between '20221201' and '20221231';
+
+
+create index idx_user_post_info_post_createdate on user_post_info(post_createdate);
+
+
