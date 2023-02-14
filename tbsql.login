@@ -22,6 +22,6 @@ set timing on
 -- tbsql display message
 prompt
 prompt #############################
-prompt # query
+prompt # Please execute the query.
 prompt #############################
 prompt

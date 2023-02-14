@@ -64,12 +64,12 @@ EOF
 #--------------------------------------------------------------------------------
 function fn_help_message(){
     echo ""
-    echo "#############################"
-    echo " tbsql tuning mode help"
-    echo "#############################"
-    echo " usage: sh tbtuning.sh [option]"
+    echo "###############################"
+    echo " tbProfiler mode help"
+    echo "###############################"
+    echo " usage: sh tbProfiler.sh [option]"
     echo "-----------------------------"
-    echo "  run  : start tbtuning"
+    echo "  run  : start tbsql Profiler"
     echo "  help : help message"
     echo "-----------------------------"
     echo ""
@@ -144,12 +144,12 @@ function fn_error_check(){
 
 # tbtuning meta display message function
 #-------------------------------------------------------------------------------
-function fn_tbtuning_options_message(){
+function fn_tbprofiler_options_message(){
     fn_display_init    
     fn_tibero_version_check
-    echo "#############################"
-    echo "# tuning mode options"
-    echo "#############################"
+    echo "###############################"
+    echo "# tbProfiler mode options"
+    echo "###############################"
     echo "  - TIBERO VERSION             : $tibero_version"
     echo "  - TIBERO USER                : $TBSQL_USER"
     echo "  - TB_SQLPATH                 : $TB_SQLPATH"
@@ -173,9 +173,9 @@ function fn_tbtuning_options_message(){
 function fn_set_autot_trace_check(){
     cd $TB_SQLPATH
     echo ""
-    echo "#############################"
-    echo "# trace option"
-    echo "#############################"
+    echo "###############################"
+    echo "# Please select the trace option."
+    echo "###############################"
     echo " - set autot on exp stat plans    : 1"
     echo " - set autot on                   : 2"
     echo " - set autot on exp               : 3"
@@ -187,8 +187,9 @@ function fn_set_autot_trace_check(){
     echo " - set autot trace stat           : 9"
     echo " - set autot trace plans          : 10"
     echo "-----------------------------"
-    echo " - quit      : q"
-    echo " - other key : no trace"
+    echo " - quit : q"
+    echo "-----------------------------"
+    echo " - other key no trace"
     echo "-----------------------------"
     echo ""
     echo -n "  press key : "
@@ -253,7 +254,7 @@ function fn_set_autot_trace_check(){
 function fn_tuning_mode(){
     # tuning mode options display
     #---------------------------------------------------------------------------        
-    fn_tbtuning_options_message
+    fn_tbprofiler_options_message
     #---------------------------------------------------------------------------        
         
     # autot setting
@@ -265,9 +266,9 @@ function fn_tuning_mode(){
     #---------------------------------------------------------------------------
     cd $TB_SQLPATH
 
-    echo "#############################"
+    echo "###############################"
     echo "# tbsql.loing options apply"
-    echo "#############################"
+    echo "###############################"
     echo ""
     rlwrap_check=`whereis rlwrap |sed 's/rlwrap://g'`
     if [ -z "$rlwrap_check" ]
@@ -301,9 +302,9 @@ function fn_xplan_execute(){
         cd $HOME
         echo ""
         echo ""
-        echo "#############################"
+        echo "###############################"
         echo "# TIBERO XPLAN"
-        echo "#############################"
+        echo "###############################"
 tbsql -s $TBSQL_USER/$TBSQL_PASSWORD <<EOF
     col "SQL Type" format a8
     col "ID" format 99999
@@ -334,12 +335,11 @@ EOF
 #-------------------------------------------------------------------------------
 function fn_tbporf_execute(){
     echo ""
-    echo "#############################"
+    echo "###############################"
     echo "# tbprof extract"
-    echo "#############################"
+    echo "###############################"
     echo ""
-    
-    
+        
     for cycle_number in {10 20 30 40 50 60 70 80 90 100}
     do
             case $cycle_number in
@@ -353,7 +353,6 @@ function fn_tbporf_execute(){
 
             sleep 0.1
     done
-
 
     trc_outfile=`date +%s_tbprof.outfile`
     session_sql_id=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |tail -n 1|awk '{printf $2}'`
@@ -397,9 +396,9 @@ function fn_tbporf_execute(){
 #-------------------------------------------------------------------------------
 function fn_exit(){
     echo ""
-    echo "#############################"
-    echo "# tuning mode menu"
-    echo "#############################"
+    echo "###############################"
+    echo "# tbProfiler mode menu"
+    echo "###############################"
     echo ""
     echo "  - tuning  : re"
     echo "  - tbprof  : tr"
@@ -420,9 +419,9 @@ function fn_exit(){
         ;;
         "q")
             echo ""
-            echo "#############################"
-            echo "# tuning mode stop"
-            echo "#############################"
+            echo "###############################"
+            echo "# tbProfiler mode stop"
+            echo "###############################"
             echo " ....exit"
             echo ""
             exit 1
