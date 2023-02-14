@@ -187,7 +187,8 @@ function fn_set_autot_trace_check(){
     echo " - set autot trace stat           : 9"
     echo " - set autot trace plans          : 10"
     echo "-----------------------------"
-    echo " - quit : q"
+    echo " - quit      : q"
+    echo " - other key : no trace"
     echo "-----------------------------"
     echo ""
     echo -n "  press key : "
@@ -337,36 +338,49 @@ function fn_tbporf_execute(){
     echo "# tbprof extract"
     echo "#############################"
     echo ""
-    echo -ne "-(10%)\r"
-    sleep 0.1
-    echo -ne "\(20%)\r"
-    sleep 0.1
-    echo -ne "-(30%)\r"
-    sleep 0.1
-    echo -ne "/(40%)\r"
-    sleep 0.1
-    echo -ne "-(50%)\r"
-    sleep 0.1
-    echo -ne "\(60%)\r"
-    sleep 0.1
-    echo -ne "-(70%)\r"
-    sleep 0.1        
-    echo -ne "/(80%)\r"
-    sleep 0.1
-    echo -ne "-(90%)\r"
-    sleep 0.1        
-    echo -ne "\(100%)\r"
-    sleep 0.1
+    
+    
+    for cycle_number in {10 20 30 40 50 60 70 80 90 100}
+    do
+            case $cycle_number in
+                    10|30|50|70|90)
+                            echo -ne "progress : -($cycle_number%)\r";;
+                    20|60)
+                            echo -ne "progress : /($cycle_number%)\r";;
+                    40|80)
+                            echo -ne "progress : \($cycle_number%)\r";;
+            esac
 
-    trc_file_seqeunce=`echo "$RANDOM"_tmp`
+            sleep 0.1
+    done
+
+
+    trc_outfile=`date +%s_tbprof.outfile`
     session_sql_id=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |tail -n 1|awk '{printf $2}'`
     session_serial=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |awk '{printf $3}'`
     session_pid=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |awk '{printf $4}'`
 	current_trace_file=`ls $SQL_TRACE_FILE_PATH/tb_sqltrc_"$session_pid"_"$session_sql_id"_"$session_serial".trc`
     if [ -n "$current_trace_file" ]
     then
-	    tbprof $current_trace_file $TB_SQLPATH/log/"$trc_file_seqeunce"_trc.outfile sys=no
-        vi  $TB_SQLPATH/log/"$trc_file_seqeunce"_trc.outfile
+	    tbprof $current_trace_file $TB_SQLPATH/log/"$trc_outfile" sys=no 1>/dev/null 2>/dev/null
+        vi  $TB_SQLPATH/log/"$trc_outfile"
+        
+        sleep 0.1
+
+        echo ""
+        echo ""
+        echo "-----------------------------"
+        echo "- file name : $TB_SQLPATH/log/$trc_outfile"
+        echo "-----------------------------"   
+        echo -n "  tbprof out file remove (y or n) ?  "
+        read yesno        
+
+        if [ "$yesno" == "y" ]
+        then
+            
+            rm -f $TB_SQLPATH/log/$trc_outfile
+        fi
+
     elif [ -z "$current_trace_file" ]
     then
         continue
