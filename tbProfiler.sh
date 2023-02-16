@@ -412,9 +412,11 @@ function fn_exit(){
 
     case "$press_key" in 
         "re")
+            echo ""
             fn_tuning_mode
         ;;
         "tr")
+            echo ""
             fn_tbporf_execute
         ;;
         "q")
