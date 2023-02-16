@@ -1,24 +1,20 @@
 #!/bin/bash
 # Readme
 #--------------------------------------------------------------------------------
-#
-#
-#
-#
-#
+# Version : tbProfiler_230216 
 #--------------------------------------------------------------------------------
 
 
 # user configuration
 #--------------------------------------------------------------------------------
-TBSQL_USER="tibero" # tbsql user
-TBSQL_PASSWORD="tmax" # tbslq user password
-TB_SQLPATH="/tibero/work/tbtuning" # working directory
-SQL_TRACE_FILE_PATH="/tibero/tibero6/instance/tbUTF8/log/sqltrace" # sql trace file path
+TBSQL_USER="" # tbsql user
+TBSQL_PASSWORD="" # tbslq user password
+TB_SQLPATH="" # working directory
+SQL_TRACE_FILE_PATH="" # sql trace file path
 #--------------------------------------------------------------------------------
 #TB_NLS_LANG=MSWIN949  # 5, 6: MSWIN949 / 7: UTF8
 #LANG=ko_KR.utf8
-stty erase ^H
+#stty erase ^H
 #stty erase ^?
 #--------------------------------------------------------------------------------
 
@@ -95,37 +91,55 @@ function fn_error_check(){
     
     if [ -z "$tibero_proc_check" ]
     then
-        echo " ERROR : tbsvr process check"
+        echo " ERROR : Check the tbsvr process"
         error_check="error"
     fi
 
     if [ -z "$TB_SID" ]
     then
-        echo " ERROR : TB_SID"
+        echo " ERROR : TB_SID variable is empty"
         error_check="error"
     fi
 
     if [ -z "$TBSQL_USER" ]
     then
-        echo "ERROR : TBSQL_USER"
+        echo "ERROR : TBSQL_USER variable is empty"
         error_check="error"
     fi
 
     if [ -z "$TBSQL_PASSWORD" ]
     then
-        echo "ERROR : TBSQL_PASSWORD"
+        echo "ERROR : TBSQL_PASSWORD variable is empty"
         error_check="error"
     fi
 
     if [ -z "$TB_SQLPATH" ]
     then
-        echo "ERROR : TB_SQLPATH"
+        echo "ERROR : TB_SQLPATH variable is empty"
         error_check="error"
     fi
 
     if [ -z "$SQL_TRACE_FILE_PATH" ]
     then
-        echo "ERROR : SQL_TRACE_FILE_PATH"
+        echo "ERROR : SQL_TRACE_FILE_PATH variable is empty"
+        error_check="error"
+    fi
+
+    if [ ! -e "$TB_SQLPATH" ]
+    then
+        echo "ERROR : $TB_SQLPATH dose not exist"
+        error_check="error"
+    fi
+
+    if [ ! -e "$SQL_TRACE_FILE_PATH" ]
+    then
+        echo "ERROR : $SQL_TRACE_FILE_PATH dose not exist"
+        error_check="error"
+    fi
+      
+    if [ ! -e "$TB_SQLPATH" ]
+    then
+        echo "ERROR : $TB_SQLPATH dose not exist"
         error_check="error"
     fi
 
