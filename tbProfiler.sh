@@ -65,7 +65,7 @@ EOF
 function fn_help_message(){
     echo ""
     echo "###############################"
-    echo " tbProfiler mode help"
+    echo " tbProfiler mode help message"
     echo "###############################"
     echo " usage: sh tbProfiler.sh [option]"
     echo "-----------------------------"
