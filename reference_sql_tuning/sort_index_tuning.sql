@@ -198,3 +198,20 @@ FROM
     ON upi.post_id = uc.post_id 
 GROUP BY 
   ui.user_id;
+
+
+
+SELECT 
+  ui.user_id,
+  sum(upi.post_view) as total_post_view,
+  sum(upi.post_like) as total_post_like,
+  sum(upi.post_dislike) as total_post_dislike,
+  count(uc.comment_id) as total_comment
+FROM 
+  user_info ui 
+  LEFT JOIN user_post_info upi 
+    ON ui.user_id = upi.user_id 
+  LEFT JOIN user_comment_info uc 
+    ON upi.post_id = uc.post_id 
+GROUP BY 
+  ui.user_id;
