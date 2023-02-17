@@ -1,7 +1,7 @@
 #!/bin/bash
 # Readme
 #--------------------------------------------------------------------------------
-# Version : tbProfiler_230216 
+# Version : 230216 
 #--------------------------------------------------------------------------------
 
 
@@ -156,7 +156,7 @@ function fn_error_check(){
 #-------------------------------------------------------------------------------
 
 
-# tbtuning meta display message function
+# tbProfiler meta display message function
 #-------------------------------------------------------------------------------
 function fn_tbprofiler_options_message(){
     fn_display_init    
@@ -263,10 +263,10 @@ function fn_set_autot_trace_check(){
 #-------------------------------------------------------------------------------
 
 
-# tuning mode function
+# tbProfiler mode function
 #-------------------------------------------------------------------------------
-function fn_tuning_mode(){
-    # tuning mode options display
+function fn_tbProfiler_mode(){
+    # tbProfiler mode options display
     #---------------------------------------------------------------------------        
     fn_tbprofiler_options_message
     #---------------------------------------------------------------------------        
@@ -276,7 +276,7 @@ function fn_tuning_mode(){
     fn_set_autot_trace_check
     #---------------------------------------------------------------------------
 
-    # tuning mode query press and tools message display
+    # tbProfiler mode query press and tools message display
     #---------------------------------------------------------------------------
     cd $TB_SQLPATH
 
@@ -364,7 +364,6 @@ function fn_tbporf_execute(){
                     40|80)
                             echo -ne "progress : \($cycle_number%)\r";;
             esac
-
             sleep 0.1
     done
 
@@ -427,7 +426,7 @@ function fn_exit(){
     case "$press_key" in 
         "re")
             echo ""
-            fn_tuning_mode
+            fn_tbProfiler_mode
         ;;
         "tr")
             echo ""
@@ -456,7 +455,7 @@ function fn_exit(){
     case "$vaild_option" in
         "run")
             fn_error_check
-            fn_tuning_mode
+            fn_tbProfiler_mode
         ;;
         *)
             fn_help_message
