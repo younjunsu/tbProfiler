@@ -19,6 +19,12 @@ SQL_TRACE_FILE_PATH=""
 #--------------------------------------------------------------------------------
 
 
+# tbProfiler system configuration
+#--------------------------------------------------------------------------------
+rlwrap_vaild_check="Y"
+#--------------------------------------------------------------------------------
+
+
 # working directory init function
 #--------------------------------------------------------------------------------
 function fn_work_directory_init(){
@@ -288,7 +294,9 @@ function fn_tbProfiler_mode(){
     echo "###############################"
     echo ""
     rlwrap_check=`whereis rlwrap |sed 's/rlwrap://g'`
-    if [ -z "$rlwrap_check" ]
+    
+    
+    if [ -z "$rlwrap_check" ] || [ "$rlwrap_vaild_check" == "N" ]
     then
         tbsql $TBSQL_USER/$TBSQL_PASSWORD -s 
     elif [ -n "$rlwrap_check" ]
