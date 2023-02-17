@@ -19,11 +19,13 @@ SQL_TRACE_FILE_PATH="" # sql trace file path
 #--------------------------------------------------------------------------------
 
 
-# working directory init
+# working directory init function
 #--------------------------------------------------------------------------------
-mkdir $TB_SQLPATH/log 2>/dev/null
-rm -f $TB_SQLPATH/log/trc.outfile 2>/dev/null
-rm -f $TB_SQLPATH/log/sql_capture.txt 2>/dev/null
+function fn_work_directory_init(){
+    mkdir $TB_SQLPATH/log 2>/dev/null
+    rm -f $TB_SQLPATH/log/trc.outfile 2>/dev/null
+    rm -f $TB_SQLPATH/log/sql_capture.txt 2>/dev/null
+}
 #--------------------------------------------------------------------------------
 
 
@@ -35,7 +37,7 @@ function fn_display_init(){
 #--------------------------------------------------------------------------------
 
 
-#
+# characterset check function
 #--------------------------------------------------------------------------------
 function fn_system_env_check(){
     TB_SQLPATH_COPY="$TB_SQLPATH"
@@ -127,19 +129,19 @@ function fn_error_check(){
 
     if [ ! -e "$TB_SQLPATH" ]
     then
-        echo "ERROR : $TB_SQLPATH dose not exist"
+        echo "ERROR : TB_SQLPATH PATH dose not exist"
         error_check="error"
     fi
 
     if [ ! -e "$SQL_TRACE_FILE_PATH" ]
     then
-        echo "ERROR : $SQL_TRACE_FILE_PATH dose not exist"
+        echo "ERROR : SQL_TRACE_FILE_PATH path dose not exist"
         error_check="error"
     fi
       
     if [ ! -e "$TB_SQLPATH" ]
     then
-        echo "ERROR : $TB_SQLPATH dose not exist"
+        echo "ERROR : TB_SQLPATH path dose not exist"
         error_check="error"
     fi
 
@@ -148,6 +150,7 @@ function fn_error_check(){
         exit 1
     elif [ "$error_check" == "success" ]
     then
+        fn_work_directory_init
         continue
     else
         exit 0
@@ -353,7 +356,7 @@ function fn_tbporf_execute(){
     echo "# tbprof extract"
     echo "###############################"
     echo ""
-        
+
     for cycle_number in {10 20 30 40 50 60 70 80 90 100}
     do
             case $cycle_number in
@@ -372,6 +375,7 @@ function fn_tbporf_execute(){
     session_serial=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |awk '{printf $3}'`
     session_pid=`grep "tbprofinfo" $TB_SQLPATH/log/sql_capture.txt |awk '{printf $4}'`
 	current_trace_file=`ls $SQL_TRACE_FILE_PATH/tb_sqltrc_"$session_pid"_"$session_sql_id"_"$session_serial".trc`
+
     if [ -n "$current_trace_file" ]
     then
 	    tbprof $current_trace_file $TB_SQLPATH/log/"$trc_outfile" sys=no 1>/dev/null 2>/dev/null

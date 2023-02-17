@@ -19,6 +19,7 @@ set linesize 100
 set timing on
     ;
 
+
 -- tbsql display message
 prompt
 prompt #############################
