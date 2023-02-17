@@ -7,12 +7,12 @@
 
 # user configuration
 #--------------------------------------------------------------------------------
-TBSQL_USER="" # tbsql user
-TBSQL_PASSWORD="" # tbslq user password
-TB_SQLPATH="" # working directory
-SQL_TRACE_FILE_PATH="" # sql trace file path
+TBSQL_USER=""
+TBSQL_PASSWORD=""
+TB_SQLPATH=""
+SQL_TRACE_FILE_PATH=""
 #--------------------------------------------------------------------------------
-#TB_NLS_LANG=MSWIN949  # 5, 6: MSWIN949 / 7: UTF8
+#TB_NLS_LANG=UTF8
 #LANG=ko_KR.utf8
 #stty erase ^H
 #stty erase ^?
