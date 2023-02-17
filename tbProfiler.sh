@@ -1,7 +1,7 @@
 #!/bin/bash
 # Readme
 #--------------------------------------------------------------------------------
-# Version : 230216 
+# Version : 230217
 #--------------------------------------------------------------------------------
 
 
@@ -57,6 +57,7 @@ EOF
     tibero_proc_check=`ps -ef|grep tbsvr |grep -w $TB_SID 2>/dev/null`
 }
 #--------------------------------------------------------------------------------
+
 
 # help message function
 #--------------------------------------------------------------------------------
@@ -124,12 +125,6 @@ function fn_error_check(){
     if [ -z "$SQL_TRACE_FILE_PATH" ]
     then
         echo "ERROR : SQL_TRACE_FILE_PATH variable is empty"
-        error_check="error"
-    fi
-
-    if [ ! -e "$TB_SQLPATH" ]
-    then
-        echo "ERROR : TB_SQLPATH PATH dose not exist"
         error_check="error"
     fi
 
