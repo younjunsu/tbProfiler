@@ -1,30 +1,37 @@
 ```
-[tibero@4777c5805ab6 tbtuning]$ sh tbtuning.sh 
+[tibero@4777c5805ab6 tbProfiler]$ sh tbProfiler.sh 
 
-#############################
- tbsql tuning mode help
-#############################
- usage: sh tbtuning.sh [option]
+###############################
+ tbProfiler mode help message
+###############################
+ usage: sh tbProfiler.sh [option]
 -----------------------------
-  run  : start tbtuning
+  run  : start tbsql Profiler
   help : help message
 -----------------------------
+
 ```
 
 ```
-[tibero@4777c5805ab6 tbtuning]$ more tbtuning.sh
+[tibero@4777c5805ab6 tbProfiler]$ more tbProfiler.sh 
+
+... skip ...
+
 # user configuration
 #--------------------------------------------------------------------------------
-TBSQL_USER="" # tbsql user
-TBSQL_PASSWORD="" # tbslq user password
-TB_SQLPATH="" # working directory
-SQL_TRACE_FILE_PATH="" # sql trace file path
+TBSQL_USER=""
+TBSQL_PASSWORD=""
+TB_SQLPATH=""
+SQL_TRACE_FILE_PATH=""
 #--------------------------------------------------------------------------------
-#TB_NLS_LANG=MSWIN949  # 5, 6: MSWIN949 / 7: UTF8
+#TB_NLS_LANG=UTF8
 #LANG=ko_KR.utf8
-stty erase ^H
+#stty erase ^H
 #stty erase ^?
 #--------------------------------------------------------------------------------
+
+... skip ...
+
 ````
 
 ![alt text](demo-image.gif)
