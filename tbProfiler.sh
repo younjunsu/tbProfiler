@@ -22,6 +22,11 @@ SQL_TRACE_FILE_PATH=""
 # working directory init function
 #--------------------------------------------------------------------------------
 function fn_work_directory_init(){
+    if [ -n "$SQL_TRACE_FILE_PATH" ]
+    then
+        mkdir $SQL_TRACE_FILE_PATH 2>/dev/null
+    fi
+
     mkdir $TB_SQLPATH/log 2>/dev/null
     rm -f $TB_SQLPATH/log/trc.outfile 2>/dev/null
     rm -f $TB_SQLPATH/log/sql_capture.txt 2>/dev/null
