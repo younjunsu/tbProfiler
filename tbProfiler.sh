@@ -25,6 +25,15 @@ rlwrap_vaild_check="Y"
 #--------------------------------------------------------------------------------
 
 
+# SQL_TRACE_FILE_PATH mkdir
+#--------------------------------------------------------------------------------
+if [ -n "$SQL_TRACE_FILE_PATH" ]
+then
+    mkdir $SQL_TRACE_FILE_PATH 2>/dev/null
+fi
+#--------------------------------------------------------------------------------
+
+
 # working directory init function
 #--------------------------------------------------------------------------------
 function fn_work_directory_init(){
@@ -97,11 +106,7 @@ function fn_error_check(){
     
     fn_tibero_version_check
     fn_system_env_check
-    
-    if [ -n "$SQL_TRACE_FILE_PATH" ]
-    then
-        mkdir $SQL_TRACE_FILE_PATH 2>/dev/null
-    fi        
+            
 
     if [ -z "$tibero_proc_check" ]
     then
